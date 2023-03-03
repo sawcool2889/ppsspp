@@ -65,6 +65,8 @@ std::vector<VulkanPushBuffer *> VulkanPushBuffer::GetAllActive() {
 }
 
 bool VulkanPushBuffer::AddBuffer() {
+	INFO_LOG(G3D, "Adding buffer of size %d to pushbuffer '%s'", (int)size_, name_);
+
 	BufInfo info;
 	VkDevice device = vulkan_->GetDevice();
 

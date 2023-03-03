@@ -568,7 +568,9 @@ void TextureCacheVulkan::BuildTexture(TexCacheEntry *const entry) {
 			// Directly load the replaced image.
 			data = drawEngine_->GetPushBufferForTextureData()->PushAligned(uploadSize, &bufferOffset, &texBuf, pushAlignment);
 			double replaceStart = time_now_d();
-			plan.replaced->Load(plan.baseLevelSrc + i, data, stride);  // if it fails, it'll just be garbage data... OK for now.
+			if (!plan.replaced->Load(plan.baseLevelSrc + i, data, stride)) {   // if it fails, it'll just be garbage data... Not good.
+				ERROR_LOG(G3D, "Failed to load replacement texture level %d (%dx%d): ", i, mipWidth, mipHeight);
+			}
 			replacementTimeThisFrame_ += time_now_d() - replaceStart;
 			VK_PROFILE_BEGIN(vulkan, cmdInit, VK_PIPELINE_STAGE_TRANSFER_BIT,
 				"Copy Upload (replaced): %dx%d", mipWidth, mipHeight);

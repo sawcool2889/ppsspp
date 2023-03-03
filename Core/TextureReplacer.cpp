@@ -1274,10 +1274,14 @@ bool ReplacedTexture::Load(int level, void *out, int rowPitch) {
 	_assert_msg_((size_t)level < levels_.size(), "Invalid miplevel");
 	_assert_msg_(out != nullptr && rowPitch > 0, "Invalid out/pitch");
 
-	if (!initDone_)
+	if (!initDone_) {
+		ERROR_LOG(G3D, "ReplacedTexture: Load called before initDone_ was set to true");
 		return false;
-	if (levelData_.empty())
+	}
+	if (levelData_.empty()) {
+		ERROR_LOG(G3D, "ReplacedTexture: levelData_ was empty.");
 		return false;
+	}
 
 	_assert_msg_(levelData_[level] != nullptr, "Level cache not set for miplevel");
 
@@ -1287,8 +1291,11 @@ bool ReplacedTexture::Load(int level, void *out, int rowPitch) {
 	const ReplacedTextureLevel &info = levels_[level];
 	const std::vector<uint8_t> &data = levelData_[level]->data;
 
-	if (data.empty())
+	if (data.empty()) {
+		ERROR_LOG(G3D, "ReplacedTexture: levelData_[level]->data was empty.");
 		return false;
+	}
+
 	if (rowPitch < info.w * 4) {
 		ERROR_LOG_REPORT(G3D, "Replacement rowPitch=%d, but w=%d (level=%d)", rowPitch, info.w * 4, level);
 		return false;
