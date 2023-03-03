@@ -307,9 +307,9 @@ void DrawEngineVulkan::BeginFrame() {
 
 	VulkanContext *vulkan = (VulkanContext *)draw_->GetNativeObject(Draw::NativeObject::CONTEXT);
 
-	frame->pushUBO->Begin(vulkan);
-	frame->pushVertex->Begin(vulkan);
-	frame->pushIndex->Begin(vulkan);
+	frame->pushUBO->BeginFrame(vulkan);
+	frame->pushVertex->BeginFrame(vulkan);
+	frame->pushIndex->BeginFrame(vulkan);
 
 	tessDataTransferVulkan->SetPushBuffer(frame->pushUBO);
 
@@ -326,7 +326,7 @@ void DrawEngineVulkan::BeginFrame() {
 		vai_.Clear();
 	}
 
-	vertexCache_->BeginNoReset();
+	vertexCache_->BeginFrameNoReset();
 
 	if (--descDecimationCounter_ <= 0) {
 		frame->descPool.Reset();
@@ -362,10 +362,10 @@ void DrawEngineVulkan::EndFrame() {
 	stats_.pushUBOSpaceUsed = (int)frame->pushUBO->GetOffset();
 	stats_.pushVertexSpaceUsed = (int)frame->pushVertex->GetOffset();
 	stats_.pushIndexSpaceUsed = (int)frame->pushIndex->GetOffset();
-	frame->pushUBO->End();
-	frame->pushVertex->End();
-	frame->pushIndex->End();
-	vertexCache_->End();
+	frame->pushUBO->EndFrame();
+	frame->pushVertex->EndFrame();
+	frame->pushIndex->EndFrame();
+	vertexCache_->EndFrame();
 }
 
 void DrawEngineVulkan::DecodeVertsToPushBuffer(VulkanPushBuffer *push, uint32_t *bindOffset, VkBuffer *vkbuf) {

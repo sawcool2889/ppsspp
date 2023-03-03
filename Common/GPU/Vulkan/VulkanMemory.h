@@ -39,19 +39,13 @@ public:
 	void Reset() { offset_ = 0; }
 
 	// Needs context in case of defragment.
-	void Begin(VulkanContext *vulkan) {
-		buf_ = 0;
-		offset_ = 0;
-		// Note: we must defrag because some buffers may be smaller than size_.
-		Defragment(vulkan);
+	void BeginFrame(VulkanContext *vulkan);
+
+	void BeginFrameNoReset() {
 		Map();
 	}
 
-	void BeginNoReset() {
-		Map();
-	}
-
-	void End() {
+	void EndFrame() {
 		Unmap();
 	}
 
@@ -138,6 +132,8 @@ private:
 	size_t buf_ = 0;
 	size_t offset_ = 0;
 	size_t size_ = 0;
+
+	int framesAtHalfCapacity_ = 0;
 	uint8_t *writePtr_ = nullptr;
 	VkBufferUsageFlags usage_;
 	const char *name_;

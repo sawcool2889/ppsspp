@@ -55,6 +55,14 @@ VulkanPushBuffer::~VulkanPushBuffer() {
 	_assert_(buffers_.empty());
 }
 
+void VulkanPushBuffer::BeginFrame(VulkanContext *vulkan) {
+	buf_ = 0;
+	offset_ = 0;
+	// Note: we must defrag because some buffers may be smaller than size_.
+	Defragment(vulkan);
+	Map();
+}
+
 std::vector<VulkanPushBuffer *> VulkanPushBuffer::GetAllActive() {
 	std::vector<VulkanPushBuffer *> buffers;
 	std::lock_guard<std::mutex> guard(g_pushBufferListMutex);

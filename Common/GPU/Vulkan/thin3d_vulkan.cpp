@@ -1032,14 +1032,14 @@ void VKContext::BeginFrame() {
 
 	// OK, we now know that nothing is reading from this frame's data pushbuffer,
 	push_->Reset();
-	push_->Begin(vulkan_);
+	push_->BeginFrame(vulkan_);
 
 	frame.descriptorPool.Reset();
 }
 
 void VKContext::EndFrame() {
 	// Stop collecting data in the frame's data pushbuffer.
-	push_->End();
+	push_->EndFrame();
 
 	renderManager_.Finish();
 

@@ -298,7 +298,7 @@ void GPU_Vulkan::BeginHostFrame() {
 	FrameData &frame = frameData_[curFrame];
 
 	frame.push_->Reset();
-	frame.push_->Begin(vulkan);
+	frame.push_->BeginFrame(vulkan);
 
 	framebufferManager_->BeginFrame();
 	textureCacheVulkan_->SetPushBuffer(frameData_[curFrame].push_);
@@ -331,7 +331,7 @@ void GPU_Vulkan::EndHostFrame() {
 	VulkanContext *vulkan = (VulkanContext *)draw_->GetNativeObject(Draw::NativeObject::CONTEXT);
 	int curFrame = vulkan->GetCurFrame();
 	FrameData &frame = frameData_[curFrame];
-	frame.push_->End();
+	frame.push_->EndFrame();
 
 	drawEngine_.EndFrame();
 
