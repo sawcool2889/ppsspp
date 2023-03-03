@@ -14,11 +14,6 @@ VK_DEFINE_HANDLE(VmaAllocation);
 //
 // Vulkan memory management utils.
 
-enum class PushBufferType {
-	CPU_TO_GPU,
-	GPU_ONLY,
-};
-
 // VulkanPushBuffer
 // Simple incrementing allocator.
 // Use these to push vertex, index and uniform data. Generally you'll have two of these
@@ -36,7 +31,7 @@ public:
 	// NOTE: If you create a push buffer with PushBufferType::GPU_ONLY,
 	// then you can't use any of the push functions as pointers will not be reachable from the CPU.
 	// You must in this case use Allocate() only, and pass the returned offset and the VkBuffer to Vulkan APIs.
-	VulkanPushBuffer(VulkanContext *vulkan, const char *name, size_t size, VkBufferUsageFlags usage, PushBufferType type);
+	VulkanPushBuffer(VulkanContext *vulkan, const char *name, size_t size, VkBufferUsageFlags usage);
 	~VulkanPushBuffer();
 
 	void Destroy(VulkanContext *vulkan);
@@ -49,22 +44,18 @@ public:
 		offset_ = 0;
 		// Note: we must defrag because some buffers may be smaller than size_.
 		Defragment(vulkan);
-		if (type_ == PushBufferType::CPU_TO_GPU)
-			Map();
+		Map();
 	}
 
 	void BeginNoReset() {
-		if (type_ == PushBufferType::CPU_TO_GPU)
-			Map();
+		Map();
 	}
 
 	void End() {
-		if (type_ == PushBufferType::CPU_TO_GPU)
-			Unmap();
+		Unmap();
 	}
 
 	void Map();
-
 	void Unmap();
 
 	// When using the returned memory, make sure to bind the returned vkbuf.
@@ -142,7 +133,6 @@ private:
 	void Defragment(VulkanContext *vulkan);
 
 	VulkanContext *vulkan_;
-	PushBufferType type_;
 
 	std::vector<BufInfo> buffers_;
 	size_t buf_ = 0;
@@ -153,7 +143,8 @@ private:
 	const char *name_;
 };
 
-// Only appropriate for use in a per-frame pool.
+// Only appropriate for use in a per-frame pool, and the descriptors allocated must be
+// used in the same frame - they cannot be stored.
 class VulkanDescSetPool {
 public:
 	VulkanDescSetPool(const char *tag, bool grow) : tag_(tag), grow_(grow) {}
